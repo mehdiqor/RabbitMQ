@@ -1,0 +1,4 @@
+*.*.* => foo.bar.baz
+#.test => mehdi.ghorbani.nodejs.test // test.test.test
+first.second.* => first.second.anything // first.second.mehdi
+first.second.# => first.second.anything.anything.anything // first.second.mehdi.ghorbani
