@@ -1,20 +1,18 @@
-const amqp = require("amqplib");
+const amqp = require('amqplib');
+const exchangeName = 'directMessage';
+const logType = process.argv.slice(2); //error, info, warning
+console.log(logType);
 
-async function receiveFromProducer(){
-    const connection = await amqp.connect("amqp://localhost:5672");
+const receiveData = async() => {
+    const connection = await amqp.connect('amqp://localhost:5672');
     const channel = await connection.createChannel();
-    const queueName = "task"
-    await channel.assertQueue(queueName, {durable : true});
-    console.log("I wait for receive messages");
-    let index = 0;
-    await channel.consume(queueName, msg => {
-        const random = (Math.floor(Math.random() * 10)) * 1000;
-        setTimeout(() => {
-            console.log(random);
-            console.log(`${index}: `, msg.content.toString());
-            index++;
-            channel.ack(msg);
-        }, random);
-    })
+    await channel.assertExchange(exchangeName, 'direct');
+    const assertedQueue = await channel.assertQueue('', {exclusive : true});
+    for (const pattern of logType) {
+        channel.bindQueue(assertedQueue.queue, exchangeName, pattern);
+    }
+    channel.consume(assertedQueue.queue, msg => {
+        console.log(msg.content.toString());
+    });
 }
-receiveFromProducer();
+receiveData();
