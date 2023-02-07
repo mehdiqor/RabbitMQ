@@ -13,3 +13,6 @@ app.use((req, res, next) => {
 app.use((error, req, res, next) => {
     return res.json({error : error.message})
 });
+app.listen(PORT, () => {
+    console.log("Order-Service running over port: ", PORT);
+});
