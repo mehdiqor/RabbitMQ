@@ -42,6 +42,7 @@ const createOrderWithQueue = async (queueName) => {
             await newOrder.save();
             channel.ack(msg);
             pushToQueue("PRODUCT", newOrder);
+            console.log("Order Saved: ", newOrder._id);
         }
     })
 }

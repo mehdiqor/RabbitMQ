@@ -19,15 +19,18 @@ const pushToQueue = async(queueName, data) => {
     try {
         await returnChannel();
         await channel.assertQueue(queueName);
-        return channel.sendToQueue(queueName, Buffer.from(JSON.stringify(data)));
+        return channel.sendToQueue(queueName, Buffer.from(JSON.stringify(data)), {persistent : true});
     } catch (error) {
         console.log(error.message);
     }
 }
 const createQueue = async (queueName) => {
-    await returnChannel();
-    await channel.assertQueue(queueName);
-    return channel
+    let myChannel = await returnChannel();
+    const queueDetail = await channel.assertQueue(queueName);
+    return {
+        channel : myChannel,
+        queueDetail
+    }
 }
 
 module.exports = {
