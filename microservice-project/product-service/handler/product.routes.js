@@ -1,5 +1,5 @@
 const { isAuthenticated } = require("../../isAuthenticated");
-const { pushToQueue } = require("../config/rabbitMQ");
+const { pushToQueue, createQueue } = require("../config/rabbitMQ");
 const { ProductModel } = require("../model/product.model");
 const router = require("express").Router();
 
@@ -26,6 +26,13 @@ router.post("/buy", isAuthenticated, async (req, res, next) => {
         const products = await ProductModel.find({_id : {$in : productIDs}});
         const {email} = req.user;
         await pushToQueue("ORDER", {products, userEmail : email});
+        const channel = await createQueue("PRODUCT");
+        channel.consume("PRODUCT", msg => {
+            console.log(JSON.parse(msg.content.toString()));
+        })
+        return res.json({
+            message : "Your order has been registered"
+        });
     } catch (error) {
         next(error)
     }

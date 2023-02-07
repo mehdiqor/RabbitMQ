@@ -18,7 +18,7 @@ const returnChannel = async() => {
 const pushToQueue = async(queueName, data) => {
     try {
         await channel.assertQueue(queueName);
-        return channel.sentToQueue(queueName, Buffer.from(JSON.stringify(data)));
+        return channel.sendToQueue(queueName, Buffer.from(JSON.stringify(data)));
     } catch (error) {
         console.log(error.message);
     }

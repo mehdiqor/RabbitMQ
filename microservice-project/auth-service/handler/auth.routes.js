@@ -7,7 +7,7 @@ router.post("/register", async(req, res, next) => {
         const {name, email, password} = req.body;
         const existUser = await UserModel.findOne({email});
         if(existUser) throw {message : "User already exists!!"};
-        const newUser = await UserModel.create({
+        const newUser = new UserModel({
             name, email, password
         });
         await newUser.save();
@@ -36,7 +36,7 @@ router.post("/login", async (req, res, next) => {
             if(!err) return res.json({token});
             return res.json({error : err.message});
         });
-        await UserModel.bulkSave();
+        await UserModel.save();
         return res.json({
             message : "new user created",
             newUser
